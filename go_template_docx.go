@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html"
 	"os"
 	"path"
 	"path/filepath"
@@ -117,6 +118,38 @@ func (dt *docxTemplate) AddPostProcessors(filesPostProcessors ...xml.HandlersMap
 	dt.filesPostProcessors = filesPostProcessors
 }
 
+// escapeXMLEntities recursively escapes XML special characters in all string values
+// within maps and slices to prevent XML parsing errors.
+// Special characters are replaced with XML entities:
+//
+//	& -> &amp;
+//	< -> &lt;
+//	> -> &gt;
+//	" -> &quot;
+//	' -> &#39;
+func escapeXMLEntities(data any) any {
+	switch v := data.(type) {
+	case string:
+		// Escape XML entities: & < > " '
+		return html.EscapeString(v)
+	case map[string]any:
+		result := make(map[string]any, len(v))
+		for key, value := range v {
+			result[key] = escapeXMLEntities(value)
+		}
+		return result
+	case []any:
+		result := make([]any, len(v))
+		for i, value := range v {
+			result[i] = escapeXMLEntities(value)
+		}
+		return result
+	default:
+		// For non-string, non-map, non-slice types, return as-is
+		return v
+	}
+}
+
 // GetTemplateVariables extracts and returns all template variables used in the DOCX file
 // as a map.
 func (dt *docxTemplate) GetTemplateVariables() (map[string]struct{}, error) {
@@ -127,6 +160,11 @@ func (dt *docxTemplate) GetTemplateVariables() (map[string]struct{}, error) {
 
 	vars := map[string]struct{}{}
 	for _, f := range zipMap {
+		// Skip media files - they are binary and not Go templates
+		if strings.HasPrefix(f.Name, "word/media/") {
+			continue
+		}
+
 		b, err := goziputils.ReadZipFileContent(f)
 		if err != nil {
 			return nil, fmt.Errorf("unable to read file '%s': %w", f.Name, err)
@@ -156,6 +194,9 @@ func (dt *docxTemplate) Apply(templateValues any) error {
 			return fmt.Errorf("error unmarshalling templateValues: %w", err)
 		}
 	}
+
+	// Escape XML entities in all string values to prevent XML parsing errors
+	templateValues = escapeXMLEntities(templateValues)
 
 	// custom user pre processing
 	if len(dt.filesPreProcessors) > 0 {

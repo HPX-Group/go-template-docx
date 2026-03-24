@@ -209,7 +209,8 @@ func ParseDocumentMeta(zm goziputils.ZipMap, tf template.FuncMap) (*documentMeta
 
 		imageNumber, err := strconv.ParseUint(imageNumberStr, 10, 64)
 		if err != nil {
-			return nil, fmt.Errorf("could not parse image number from filename '%s': %w", filename, err)
+			// Skip media files that don't match image<NUMBER> pattern (e.g., other media files)
+			continue
 		}
 
 		if imageNumber > d.greaterImageNumber {
