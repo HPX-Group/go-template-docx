@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"text/template"
 
-	"github.com/JJJJJJack/go-template-docx/internal/docx"
+	"github.com/HPX-Group/go-template-docx/internal/docx"
 )
 
 // ApplyTemplateToCells applies the templateValues to the given file content and returns the modified content.

@@ -1,4 +1,4 @@
-module github.com/JJJJJJack/go-template-docx
+module github.com/HPX-Group/go-template-docx
 
 go 1.18
 

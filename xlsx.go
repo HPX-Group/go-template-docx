@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/JJJJJJack/go-template-docx/internal/xlsx"
+	"github.com/HPX-Group/go-template-docx/internal/xlsx"
 	goziputils "github.com/JJJJJJack/go-zip-utils"
 )
 

@@ -13,9 +13,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/JJJJJJack/go-template-docx/internal/docx"
-	docxtemplate "github.com/JJJJJJack/go-template-docx/internal/template"
-	"github.com/JJJJJJack/go-template-docx/xml"
+	"github.com/HPX-Group/go-template-docx/internal/docx"
+	docxtemplate "github.com/HPX-Group/go-template-docx/internal/template"
+	"github.com/HPX-Group/go-template-docx/xml"
 	goziputils "github.com/JJJJJJack/go-zip-utils"
 )
 
